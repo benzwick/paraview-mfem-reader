@@ -81,6 +81,8 @@ class MFEMReader(VTKPythonAlgorithmBase):
 
         # Points
         points = np.array([np.array(v.split(), dtype=float) for v in vert])
+        if dim == 2:
+            points = np.hstack([points, np.zeros((nvert, 1))])
         del vert
         output.SetPoints(points)
         del points
