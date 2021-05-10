@@ -119,29 +119,34 @@ class MFEMReader(VTKPythonAlgorithmBase):
         cell_offsets = np.empty((nelem), dtype=int)
         cell_conn = []
 
+        # Function used to get element nodal connectivity
+        if mesh_is_curved:
+            # FIXME: MFEM ordering is different to VTK
+            get_conn = mesh_fes.GetElementDofs
+        else:
+            get_conn = mesh.GetElementVertices
+
+        # Element order for each mesh element
+        elem_order = np.ones((nelem), dtype=int)
+        if mesh_is_curved:
+            for i in range(nelem):
+                elem_order[i] = mesh_fes.GetOrder(i)
+
         offset = 0
         for i in range(nelem):
             a = mesh.GetAttribute(i)
             t = mesh.GetElementType(i)
-            if mesh_is_curved:
-                # FIXME: MFEM ordering is different to VTK
-                v = mesh_fes.GetElementDofs(i)
-            else:
-                v = mesh.GetElementVertices(i)
+            v = get_conn(i)
             cell_attributes[i] = a
-            if mesh_is_curved:
-                elem_order = mesh_fes.GetOrder(i)
-            else:
-                elem_order = 1
             # FIXME: add support for mesh order > 1
-            cell_types[i] = mfem_to_vtk_type[t][min(elem_order, 2)]
+            cell_types[i] = mfem_to_vtk_type[t][min(elem_order[i], 2)]
             cell_offsets[i] = offset
             offset += len(v) + 1
             cell_conn.append(len(v))
             cell_conn.extend(v)
 
         output.SetCells(cell_types, cell_offsets, cell_conn)
-        del cell_types, cell_offsets, cell_conn
+        del cell_types, cell_offsets, cell_conn, elem_order
 
         output.CellData.append(cell_attributes, "attribute")
         del cell_attributes
