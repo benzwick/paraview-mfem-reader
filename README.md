@@ -2,8 +2,13 @@
 
 ParaView plugin for reading [MFEM](https://mfem.org) files.
 
-This plugin can be used to read MFEM `.mesh` and
-`.mfem_root` (VisItDataCollection) files.
+This plugin can be used to read
+[MFEM mesh](https://mfem.org/mesh-formats)
+(`.mesh` and `.mesh.gz`) files
+as well as other mesh formats supported by MFEM such as Gmsh (`.msh`) files.
+It can also be used to read
+[MFEM data collection](https://mfem.github.io/doxygen/html/classmfem_1_1VisItDataCollection.html)
+(`.mfem_root`) files that contain a mesh and associated fields.
 
 ## Installing
 

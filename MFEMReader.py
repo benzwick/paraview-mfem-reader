@@ -27,7 +27,18 @@ mfem_to_vtk_type = [
     13, # PRISM = 6
 ]
 
-extensions = ["mesh", "mfem_root"]
+extensions = [
+    # MFEM collection
+    "mfem_root",
+    # MFEM mesh format
+    "mesh",
+    "mesh.gz",
+    # Other meshes supported by MFEM
+    "msh",                      # GMsh
+    "vtk",                      # VTK
+    # TODO: Add more mesh formats
+]
+
 file_description = "MFEM files"
 
 @smproxy.reader(
@@ -60,20 +71,14 @@ class MFEMReader(VTKPythonAlgorithmBase):
         _, ext = os.path.splitext(self._filename)
         cwd = os.path.dirname(self._filename)
 
-        # Read mesh
-        if ext == ".mesh":
-            mesh_filename = self._filename
-        elif ext == ".mfem_root":
+        if ext == ".mfem_root":
             with open(self._filename) as f:
                 root = json.load(f)
                 mesh_filename = os.path.join(cwd, root['dsets']['main']['mesh']['path'])
                 # FIXME: create mesh filename using 'cycle'
                 mesh_filename = mesh_filename[:-4] + "000000"
         else:
-            raise RuntimeError("Unsupported file format: {}".format(ext))
-
-        if False: # for interactive development only
-            mesh_filename = "/home/ben/projects/mfem/mfem/data/beam-hex.mesh"
+            mesh_filename = self._filename
 
         mesh = mfem.Mesh(mesh_filename)
         dim = mesh.Dimension()
