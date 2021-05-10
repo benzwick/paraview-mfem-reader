@@ -34,7 +34,7 @@ extensions = [
     "mesh",
     "mesh.gz",
     # Other meshes supported by MFEM
-    "msh",                      # GMsh
+    "msh",                      # Gmsh
     "vtk",                      # VTK
     # TODO: Add more mesh formats
 ]
