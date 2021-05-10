@@ -20,7 +20,7 @@ __version__ = "0.1.0"
 # VTK:  https://vtk.org/doc/nightly/html/vtkCellType_8h_source.html
 # NOTE: Linear elements load much faster than arbitrary order Lagrange elements
 mfem_to_vtk_type = [
-    [ 1,  1,  1],  # POINT = 0
+    [ 1,  1,  1], # POINT = 0
     [-1,  3, 68], # SEGMENT = 1
     [-1,  5, 69], # TRIANGLE = 2
     [-1,  9, 70], # SQUARE = 3
@@ -76,9 +76,10 @@ class MFEMReader(VTKPythonAlgorithmBase):
         if ext == ".mfem_root":
             with open(self._filename) as f:
                 root = json.load(f)
-                mesh_filename = os.path.join(cwd, root['dsets']['main']['mesh']['path'])
-                # FIXME: create mesh filename using 'cycle'
-                mesh_filename = mesh_filename[:-4] + "000000"
+                cycle = int(root['dsets']['main']['cycle'])
+                mesh_filename = root['dsets']['main']['mesh']['path']
+                mesh_filename = format(mesh_filename % cycle)
+                mesh_filename = os.path.join(cwd, mesh_filename)
         else:
             mesh_filename = self._filename
 
@@ -155,9 +156,9 @@ class MFEMReader(VTKPythonAlgorithmBase):
         if ext == ".mfem_root":
             fields = root['dsets']['main']['fields']
             for name, prop in fields.items():
-                filename = os.path.join(cwd, prop['path'])
-                # FIXME: create field filename using 'cycle'
-                filename = filename[:-4] + "000000"
+                filename = prop['path']
+                filename = format(filename % cycle)
+                filename = os.path.join(cwd, filename)
                 gf = mfem.GridFunction(mesh, filename)
                 vdim = gf.VectorDim()
                 # FIXME: add support for vector fields which will required reshape
