@@ -94,12 +94,12 @@ class MFEMReader(VTKPythonAlgorithmBase):
         if mesh.GetNodes() is None:
             mesh_is_curved = False
             nnode = mesh.GetNV()
-            points = mesh.GetVertexArray()
+            points = np.array(mesh.GetVertexArray())
         else:
             print("WARNING: Reading curved meshes is untested and probably broken!")
             mesh_is_curved = True
             nnode = mesh.GetNodes().Size() // dim
-            points = mesh.GetNodes().GetDataArray()
+            points = np.array(mesh.GetNodes().GetDataArray())
             mesh_fes = mesh.GetNodalFESpace()
             if mesh_fes.GetOrdering() == 0:
                 points = points.reshape((dim, nnode)).T
@@ -162,7 +162,7 @@ class MFEMReader(VTKPythonAlgorithmBase):
                 #        of data based on ordering similar to nodes.
                 if vdim != 1:
                     raise NotImplementedError("Only scalar fields (VDim == 1) are allowed.")
-                data = gf.GetDataArray()
+                data = np.array(gf.GetDataArray())
                 if prop['tags']['assoc'] == 'nodes':
                     output.PointData.append(data, name)
                 elif prop['tags']['assoc'] == 'elements':
