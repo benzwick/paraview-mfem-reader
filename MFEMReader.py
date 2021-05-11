@@ -157,15 +157,28 @@ class MFEMReader(VTKPythonAlgorithmBase):
                 filename = format(filename % cycle)
                 filename = os.path.join(cwd, filename)
                 gf = mfem.GridFunction(mesh, filename)
-                vdim = gf.VectorDim()
-                # FIXME: add support for vector fields which will required reshape
-                #        of data based on ordering similar to nodes.
-                if vdim != 1:
-                    raise NotImplementedError("Only scalar fields (VDim == 1) are allowed.")
+                gf_fes = gf.FESpace()
+                gf_vdim = gf.VectorDim()
+                gf_nnode = gf_fes.GetNDofs() // gf_vdim
+                gf_nelem = gf_fes.GetNBE()
                 data = np.array(gf.GetDataArray())
                 if prop['tags']['assoc'] == 'nodes':
+                    assert gf_nnode == nnode, "Mesh and grid function have different number of nodes"
+                    if gf_fes.GetOrdering() == 0:
+                        data = data.reshape((gf_vdim, gf_nnode)).T
+                    elif gf_fes.GetOrdering() == 1:
+                        data = data.reshape((gf_nnode, gf_vdim))
+                    else:
+                        raise NotImplementedError
                     output.PointData.append(data, name)
                 elif prop['tags']['assoc'] == 'elements':
+                    assert gf_nelem == nelem, "Mesh and grid function have different number of elements"
+                    if gf_fes.GetOrdering() == 0:
+                        data = data.reshape((gf_vdim, gf_nelem)).T
+                    elif gf_fes.GetOrdering() == 1:
+                        data = data.reshape((gf_nelem, gf_vdim))
+                    else:
+                        raise NotImplementedError
                     output.CellData.append(data, name)
                 else:
                     raise NotImplementedError("assoc: '{}'".format(prop['tags']['assoc']))
