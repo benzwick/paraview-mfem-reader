@@ -112,7 +112,6 @@ class MFEMReader(VTKPythonAlgorithmBase):
         elif dim == 2:
             points = np.hstack([points, np.zeros((nnode, 1))])
         output.SetPoints(points)
-        del points
 
         # Cells
         cell_attributes = np.empty((nelem), dtype=int)
@@ -147,10 +146,8 @@ class MFEMReader(VTKPythonAlgorithmBase):
             cell_conn.extend(v)
 
         output.SetCells(cell_types, cell_offsets, cell_conn)
-        del cell_types, cell_offsets, cell_conn, elem_order
 
         output.CellData.append(cell_attributes, "attribute")
-        del cell_attributes
 
         # Read fields
         if ext == ".mfem_root":
@@ -168,10 +165,8 @@ class MFEMReader(VTKPythonAlgorithmBase):
                 data = gf.GetDataArray()
                 if prop['tags']['assoc'] == 'nodes':
                     output.PointData.append(data, name)
-                    del data
                 elif prop['tags']['assoc'] == 'elements':
                     output.CellData.append(data, name)
-                    del data
                 else:
                     raise NotImplementedError("assoc: '{}'".format(prop['tags']['assoc']))
 
