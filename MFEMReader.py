@@ -156,7 +156,30 @@ class MFEMReader(VTKPythonAlgorithmBase):
                 filename = prop['path']
                 filename = format(filename % cycle)
                 filename = os.path.join(cwd, filename)
-                gf = mfem.GridFunction(mesh, filename)
+
+                # FIXME: compressed files should be handled internally by MFEM instead
+                with open(filename, 'rb') as f:
+                    if f.read(2) == b'\x1f\x8b':
+                        compressed = True
+                    else:
+                        compressed = False
+                if not compressed:
+                    gf = mfem.GridFunction(mesh, filename)
+                else:
+                    raise NotImplementedError("If you want to crash ParaView uncomment this line and try again.")
+                    import io
+                    import gzip
+                    with gzip.open(filename, 'rt') as f:
+                        sio = io.StringIO(f.read())
+                        # mfem::GridFunction::GridFunction(mfem::Mesh *,std::istream &)
+                        # gf = mfem.GridFunction(mesh, sio) # does not work
+                        gf_fec = mfem.H1_FECollection(1, dim)
+                        gf_fes = mfem.FiniteElementSpace(mesh, gf_fec)
+                        gf = mfem.GridFunction(gf_fes)
+                        # gf.Load(sio, gf.Size()) # does not work - data is corrupted
+                        gf.Load(sio) # does not work - data is empty
+                        print(gf.GetDataArray())
+
                 gf_fes = gf.FESpace()
                 gf_vdim = gf.VectorDim()
                 gf_nnode = gf_fes.GetNDofs() // gf_vdim
