@@ -132,10 +132,8 @@ class MFEMReader(VTKPythonAlgorithmBase):
 
         offset = 0
         for i in range(nelem):
-            a = mesh.GetAttribute(i)
             t = mesh.GetElementType(i)
             v = get_conn(i)
-            cell_attributes[i] = a
             # FIXME: add support for mesh order > 1
             cell_types[i] = mfem_to_vtk_type[t][min(elem_order[i], 2)]
             cell_offsets[i] = offset
@@ -145,6 +143,9 @@ class MFEMReader(VTKPythonAlgorithmBase):
 
         output.SetCells(cell_types, cell_offsets, cell_conn)
 
+        # Attributes
+        for i in range(nelem):
+            cell_attributes[i] = mesh.GetAttribute(i)
         output.CellData.append(cell_attributes, "attribute")
 
         # Read fields
