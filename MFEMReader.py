@@ -91,13 +91,12 @@ class MFEMReader(VTKPythonAlgorithmBase):
         #        to use for the mesh curvature.
 
         # Points
-        if mesh.GetNodes() is None:
-            mesh_is_curved = False
+        nodes = mesh.GetNodes()
+        if nodes is None:
             nnode = mesh.GetNV()
             points = np.array(mesh.GetVertexArray())
         else:
             print("WARNING: Reading curved meshes is untested and probably broken!")
-            mesh_is_curved = True
             nnode = mesh.GetNodes().Size() // dim
             points = np.array(mesh.GetNodes().GetDataArray())
             mesh_fes = mesh.GetNodalFESpace()
@@ -119,16 +118,15 @@ class MFEMReader(VTKPythonAlgorithmBase):
         cell_offsets = np.empty((nelem), dtype=int)
         cell_conn = []
 
-        # Function used to get element nodal connectivity
-        if mesh_is_curved:
-            # FIXME: MFEM ordering is different to VTK
-            get_conn = mesh_fes.GetElementDofs
-        else:
-            get_conn = mesh.GetElementVertices
-
         # Element order for each mesh element
         elem_order = np.ones((nelem), dtype=int)
-        if mesh_is_curved:
+
+        # Function used to get element nodal connectivity
+        if nodes is None:
+            get_conn = mesh.GetElementVertices
+        else:
+            # FIXME: MFEM ordering is different to VTK
+            get_conn = mesh_fes.GetElementDofs
             for i in range(nelem):
                 elem_order[i] = mesh_fes.GetOrder(i)
 
