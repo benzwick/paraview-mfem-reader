@@ -128,6 +128,7 @@ class MFEMReader(VTKPythonAlgorithmBase):
         nelem = mesh.GetNE()
 
         # Points
+        mesh_fes = mesh.GetNodalFESpace()
         nodes = mesh.GetNodes()
         if nodes is None:
             nnode = mesh.GetNV()
@@ -135,7 +136,6 @@ class MFEMReader(VTKPythonAlgorithmBase):
         else:
             nnode = mesh.GetNodes().Size() // dim
             points = np.array(mesh.GetNodes().GetDataArray())
-            mesh_fes = mesh.GetNodalFESpace()
             if mesh_fes.GetOrdering() == 0:
                 points = points.reshape((dim, nnode)).T
             elif mesh_fes.GetOrdering() == 1:
@@ -178,9 +178,14 @@ class MFEMReader(VTKPythonAlgorithmBase):
                     perm = VTKGeometry_QuadraticVertexPermutation[geom]
                     cell_types[i] = VTKGeometry_QuadraticMap[geom]
                 else:
-                    print(f"Failed to read mesh file {mesh_filename}")
-                    print(f"ERROR: Only elements of order 1 and 2 are supported")
-                    return 1
+                    # FIXME: this needs more work...
+                    # See CreateVTKMesh for reading VTK Lagrange elements and
+                    # invert that process to create VTK Lagrange elements.
+                    # https://github.com/mfem/mfem/blob/master/mesh/mesh_readers.cpp
+                    parray = mfem.intArray()
+                    mfem.CreateVTKElementConnectivity(parray, geom, order)
+                    perm = parray.ToList()
+                    cell_types[i] = VTKGeometry_HighOrderMap[geom]
                 if perm: v = [v[i] for i in perm]
                 cell_offsets[i] = offset
                 offset += len(v) + 1
