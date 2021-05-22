@@ -154,9 +154,6 @@ class MFEMReader(VTKPythonAlgorithmBase):
         cell_offsets = np.empty((nelem), dtype=int)
         cell_conn = []
 
-        # Element order for each mesh element
-        elem_order = np.ones((nelem), dtype=int)
-
         offset = 0
         if nodes is None:
             for i in range(nelem):
