@@ -36,30 +36,30 @@ file_description = "MFEM files"
 # VTK:  - https://vtk.org/doc/nightly/html/vtkCellType_8h_source.html
 # NOTE: Linear elements load much faster than arbitrary order Lagrange elements
 
-VTKGeometry_Map = [
+VTKGeometry_Map = [                       # MFEM:
     vtk.VTK_VERTEX,                       # POINT
     vtk.VTK_LINE,                         # SEGMENT
-    vtk.VTK_TRIANGLE,
+    vtk.VTK_TRIANGLE,                     # TRIANGLE
     vtk.VTK_QUAD,                         # SQUARE
     vtk.VTK_TETRA,                        # TETRAHEDRON
     vtk.VTK_HEXAHEDRON,                   # CUBE
     vtk.VTK_WEDGE]                        # PRISM
 
-VTKGeometry_QuadraticMap = [
+VTKGeometry_QuadraticMap = [              # MFEM:
     vtk.VTK_VERTEX,                       # POINT
     vtk.VTK_QUADRATIC_EDGE,               # SEGMENT
-    vtk.VTK_QUADRATIC_TRIANGLE,
+    vtk.VTK_QUADRATIC_TRIANGLE,           # TRIANGLE
     vtk.VTK_BIQUADRATIC_QUAD,             # SQUARE
     vtk.VTK_QUADRATIC_TETRA,              # TETRAHEDRON
     vtk.VTK_TRIQUADRATIC_HEXAHEDRON,      # CUBE
     vtk.VTK_BIQUADRATIC_QUADRATIC_WEDGE]  # PRISM
 
-VTKGeometry_HighOrderMap = [
+VTKGeometry_HighOrderMap = [              # MFEM:
     vtk.VTK_VERTEX,                       # POINT
     vtk.VTK_LAGRANGE_CURVE,               # SEGMENT
-    vtk.VTK_LAGRANGE_TRIANGLE,
+    vtk.VTK_LAGRANGE_TRIANGLE,            # TRIANGLE
     vtk.VTK_LAGRANGE_QUADRILATERAL,       # SQUARE
-    vtk.VTK_LAGRANGE_TETRAHEDRON,
+    vtk.VTK_LAGRANGE_TETRAHEDRON,         # TETRAHEDRON
     vtk.VTK_LAGRANGE_HEXAHEDRON,          # CUBE
     vtk.VTK_LAGRANGE_WEDGE]               # PRISM
 
