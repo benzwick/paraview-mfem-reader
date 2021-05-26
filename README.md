@@ -40,7 +40,7 @@ Please see the references below for additional details.
 
 4. Install packages into virtual environment:
 
-        source pvpy-${PV_PY_VER}-venv/bin/activate
+        source ${PV_PY_PREFIX}-venv/bin/activate
         pip uninstall -y numpy
         pip install --ignore-installed numpy==$PV_NP_VER
         pip uninstall -y six
