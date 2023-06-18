@@ -69,3 +69,4 @@ You should now be able to open MFEM files using `File` &rarr; `Open`.
 - <https://discourse.paraview.org/t/how-can-i-install-and-import-other-modules-inside-pvpython/3067/6>
 - <https://gitlab.kitware.com/paraview/paraview/-/issues/17891>
 - <https://docs.python.org/3/library/venv.html>
+- <https://www.kitware.com/easy-data-conversion-to-vtk-with-python/>
